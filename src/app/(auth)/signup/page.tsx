@@ -84,6 +84,7 @@ const SignupPage = () => {
             status: 'success',
             duration: 5000,
             isClosable: true,
+            position: 'top',
           });
         } else {
           throw new Error('Invalid response structure from API');
@@ -105,6 +106,7 @@ const SignupPage = () => {
         status: 'error',
         duration: 5000,
         isClosable: true,
+        position: 'top',
       });
     }
   };
