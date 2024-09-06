@@ -1,4 +1,3 @@
-// src/app/api/auth/signin/route.ts
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
@@ -39,15 +38,18 @@ export async function POST(request: Request) {
       { expiresIn: '1h' }
     );
 
-    return NextResponse.json({ message: 'Sign in successful', token }, { status: 200 });
+    return NextResponse.json({ message: 'Sign in successful', token, user: { id: user.id, email: user.email } }, { status: 200 });
   } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json({ message: 'An error occurred', error: error.message }, { status: 400 });
-    } else {
-      return NextResponse.json({ message: 'An unknown error occurred' }, { status: 400 });
+    console.error('Signin Error:', error);
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ message: 'Validation error', errors: error.errors }, { status: 400 });
     }
+    return NextResponse.json({ message: 'An error occurred during sign in' }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
   }
 }
+
 export async function OPTIONS(request: Request) {
   return NextResponse.json({}, {
     headers: {
