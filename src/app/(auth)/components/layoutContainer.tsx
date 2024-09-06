@@ -12,7 +12,7 @@ function LayoutContainer({ children }: { children: React.ReactNode }) {
         h="100vh"
         width="50vw"
       >
-        {/* <Image src="/auth-img.png" fill alt="" /> */}
+        <Image src="/marketplace.jpg" alt="Marketplace" layout="fill" />
       </Box>
       <Box w={{ base: '100%', lg: '50%' }} maxH={'100vh'} overflowY={'scroll'}>
         {children}

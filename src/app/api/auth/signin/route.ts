@@ -13,6 +13,7 @@ const SignInSchema = z.object({
 });
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export async function POST(request: Request) {
   try {
@@ -46,4 +47,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'An unknown error occurred' }, { status: 400 });
     }
   }
+}
+export async function OPTIONS(request: Request) {
+  return NextResponse.json({}, {
+    headers: {
+      'Access-Control-Allow-Origin': API_URL,
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 }

@@ -1,17 +1,21 @@
 // src/features/auth/authApiSlice.ts
 import { apiSlice } from "../apiSlice";
 
-// Define the User type if not already defined
+
 interface User {
   // Define user properties here
   id: string;
   email: string;
-  // ... other properties
+  
 }
 
+export interface LoginResponse {
+  user: User;
+  token: string;
+}
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<User, { email: string; password: string }>({
+    login: builder.mutation<LoginResponse, { email: string; password: string }>({
       query: (credentials) => ({
         url: '/auth/signin',
         method: 'POST',
