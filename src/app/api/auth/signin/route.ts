@@ -38,7 +38,16 @@ export async function POST(request: Request) {
       { expiresIn: '1h' }
     );
 
-    return NextResponse.json({ message: 'Sign in successful', token, user: { id: user.id, email: user.email } }, { status: 200 });
+    const response = NextResponse.json({ message: 'Sign in successful', user: { id: user.id, email: user.email } }, { status: 200 });
+response.cookies.set('token', token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV !== 'development',
+  sameSite: 'strict',
+  maxAge: 3600, // 1 hour
+  path: '/',
+});
+return response;
+    // return NextResponse.json({ message: 'Sign in successful', token, user: { id: user.id, email: user.email } }, { status: 200 });
   } catch (error) {
     console.error('Signin Error:', error);
     if (error instanceof z.ZodError) {
