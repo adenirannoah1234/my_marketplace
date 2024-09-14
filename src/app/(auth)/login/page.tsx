@@ -15,27 +15,65 @@ import {
   Text,
 } from '@chakra-ui/react';
 import Link from 'next/link';
-import { useLoginMutation } from '@/lib/features/auth/authApiSlice';
-import { useDispatch } from 'react-redux';
-import { setCredentials } from '@/lib/features/auth/authSlice';
 import { useRouter } from 'next/navigation';
+import { signIn, useSession } from 'next-auth/react';
+
+const CustomInput = ({
+  id,
+  type,
+  placeholder,
+  name,
+  value,
+  onChange,
+}: {
+  id: string;
+  type: string;
+  placeholder: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) => (
+  <FormControl id={id} w="100%">
+    <FormLabel w="100%" fontSize="14px" color="#121111">
+      {placeholder}
+    </FormLabel>
+    <Input
+      type={type}
+      placeholder={`Enter your ${placeholder}`}
+      _focus={{ borderColor: '#EB4022' }}
+      border={'1px solid #AFAFAF'}
+      focusBorderColor="transparent"
+      name={name}
+      value={value}
+      onChange={onChange}
+      py="1.5rem"
+      px="1rem"
+      w="100%"
+      sx={{
+        '::placeholder': {
+          fontSize: '14px',
+          color: '#a89f98',
+        },
+      }}
+    />
+  </FormControl>
+);
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const router = useRouter();
-  const dispatch = useDispatch();
   const toast = useToast();
-  const [login, { isLoading }] = useLoginMutation();
+  const [isLoading, setIsLoading] = useState(false);
+  const { status } = useSession();
+
+  if (status === 'authenticated') {
+    router.push('/');
+    return null;
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,48 +90,39 @@ const LoginPage = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
-      const response = await login(formData).unwrap();
-      console.log('Login response:', response); // For debugging
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+      });
 
-      if (response && typeof response === 'object' && 'token' in response) {
-        const { token, user } = response;
-        dispatch(setCredentials({ user, token }));
-        toast({
-          title: 'Login Successful',
-          description: 'Welcome back!',
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-          position: 'top',
-        });
-        router.push('/');
-      } else {
-        throw new Error('Invalid response structure from API');
-      }
-    } catch (err: any) {
-      console.error('Login Error:', err);
-      let errorMessage = 'Failed to log in.';
-
-      if (err.status === 'FETCH_ERROR') {
-        errorMessage =
-          'Network error. Please check your connection and try again.';
-      } else if (err.status === 401) {
-        errorMessage = 'Invalid email or password.';
-      } else if (err.data?.message) {
-        errorMessage = err.data.message;
-      } else if (err instanceof Error) {
-        errorMessage = err.message;
+      if (result?.error) {
+        throw new Error(result.error);
       }
 
       toast({
+        title: 'Login Successful',
+        description: 'Welcome back!',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+        position: 'top',
+      });
+      router.push('/');
+    } catch (err: any) {
+      console.error('Login Error:', err);
+      toast({
         title: 'Login Failed',
-        description: errorMessage,
+        description: err.message || 'Failed to log in.',
         status: 'error',
         duration: 5000,
         isClosable: true,
         position: 'top',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -105,56 +134,22 @@ const LoginPage = () => {
             Sign in
           </Heading>
           <VStack as={'form'} w="100%" gap="1rem" onSubmit={handleSubmit}>
-            <FormControl id="email" w="100%">
-              <FormLabel w="100%" fontSize="14px" color="#121111">
-                Email Address
-              </FormLabel>
-              <Input
-                type="email"
-                placeholder="Enter your Email Address"
-                _focus={{ borderColor: '#EB4022' }}
-                border={'1px solid #AFAFAF'}
-                focusBorderColor="transparent"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                py="1.5rem"
-                px="1rem"
-                w="100%"
-                sx={{
-                  '::placeholder': {
-                    fontSize: '14px',
-                    color: '#a89f98',
-                  },
-                }}
-              />
-            </FormControl>
-
-            <FormControl id="password">
-              <FormLabel fontSize="14px" color="#121111">
-                Password
-              </FormLabel>
-              <Input
-                type="password"
-                placeholder="Enter your password"
-                _focus={{ borderColor: '#EB4022' }}
-                border={'1px solid #AFAFAF'}
-                focusBorderColor="transparent"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                py="1.5rem"
-                px="1rem"
-                w="100%"
-                sx={{
-                  '::placeholder': {
-                    fontSize: '14px',
-                    color: '#a89f98',
-                  },
-                }}
-              />
-            </FormControl>
-
+            <CustomInput
+              id="email"
+              type="email"
+              placeholder="Email Address"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+            <CustomInput
+              id="password"
+              type="password"
+              placeholder="Password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+            />
             <Flex
               justify="space-between"
               alignItems="center"
@@ -173,7 +168,6 @@ const LoginPage = () => {
                 Forgotten Password
               </Link>
             </Flex>
-
             <Button
               bg="#EB4022"
               color="white"

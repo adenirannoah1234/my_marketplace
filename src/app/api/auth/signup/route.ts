@@ -1,98 +1,59 @@
-import { NextResponse } from 'next/server';
+// pages/api/auth/signup.ts
+import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
-import jwt from 'jsonwebtoken';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
-import { existsSync } from 'fs';
 
-// Initialize Prisma Client
 const prisma = new PrismaClient();
 
-// Ensure necessary environment variables are set
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET is not defined');
-}
-if (!process.env.NEXT_PUBLIC_API_URL) {
-  throw new Error('NEXT_PUBLIC_API_URL is not defined');
-}
-
-const JWT_SECRET = process.env.JWT_SECRET;
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-// Define Zod schema for validation
 const SignUpSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  name: z.string().optional(),
-  address: z.string().optional(),
-  phoneNumber: z.string().optional(),
+  name: z.string(),
+  address: z.string(),
+  phoneNumber: z.string(),
 });
 
-export async function POST(request: Request) {
+async function handleSignUp(formData: FormData) {
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+  const name = formData.get('name') as string;
+  const address = formData.get('address') as string;
+  const phoneNumber = formData.get('phoneNumber') as string;
+
+  // Validate the fields using Zod
+  SignUpSchema.parse({ email, password, name, address, phoneNumber });
+
+  const existingUser = await prisma.user.findUnique({ where: { email } });
+  if (existingUser) {
+    return NextResponse.json({ message: 'User already exists' }, { status: 400 });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 12);
+
+  const user = await prisma.user.create({
+    data: {
+      email,
+      password: hashedPassword,
+      name,
+      address,
+      phoneNumber,
+    },
+  });
+
+  return NextResponse.json({
+    message: 'User created successfully',
+    user: { id: user.id, email: user.email, name: user.name },
+  }, { status: 201 });
+}
+
+export async function POST(req: NextRequest) {
   try {
-    const formData = await request.formData();
-    const fields = Object.fromEntries(formData.entries());
-    const { email, password, name, address, phoneNumber } = SignUpSchema.parse(fields);
-
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return NextResponse.json({ message: 'User already exists' }, { status: 400 });
-    }
-
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Handle file upload
-    let pictureUrl = '';
-    const picture = formData.get('picture') as File | null;
-    if (picture) {
-      const bytes = await picture.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const pictureName = `${Date.now()}-${picture.name}`;
-      const uploadsDir = path.join(process.cwd(), 'public/uploads');
-
-      // Ensure the uploads directory exists
-      if (!existsSync(uploadsDir)) {
-        await mkdir(uploadsDir, { recursive: true });
-      }
-
-      const filePath = path.join(uploadsDir, pictureName);
-      await writeFile(filePath, buffer);
-      pictureUrl = `${API_URL}/uploads/${pictureName}`;
-    }
-
-    // Create new user
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-        address,
-        phoneNumber,
-        picture: pictureUrl,
-      },
-    });
-
-    // Generate JWT token
-    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
-      expiresIn: '1h',
-    });
-
-    return NextResponse.json(
-      { message: 'User created successfully', user, token },
-      {
-        status: 201,
-        headers: {
-          'Access-Control-Allow-Origin': API_URL,
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        },
-      }
-    );
+    const formData = await req.formData(); // Parse FormData from the request
+    return await handleSignUp(formData);
   } catch (error) {
+    console.error('Signup Error:', error);
+
     if (error instanceof z.ZodError) {
       return NextResponse.json({ message: 'Validation error', errors: error.errors }, { status: 400 });
     } else if (error instanceof Error) {
@@ -103,14 +64,4 @@ export async function POST(request: Request) {
   } finally {
     await prisma.$disconnect();
   }
-}
-
-export async function OPTIONS(request: Request) {
-  return NextResponse.json({}, {
-    headers: {
-      'Access-Control-Allow-Origin': API_URL,
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
-  });
 }

@@ -1,21 +1,11 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import jwt from 'jsonwebtoken'
+import { getToken } from 'next-auth/jwt'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret'
-
-export function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value
+export async function middleware(request: NextRequest) {
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
 
   if (!token && request.nextUrl.pathname !== '/login' && request.nextUrl.pathname !== '/signup') {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
-
-  try {
-    if (token) {
-      jwt.verify(token, JWT_SECRET)
-    }
-  } catch (error) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 

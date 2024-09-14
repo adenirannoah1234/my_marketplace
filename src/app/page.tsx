@@ -1,26 +1,23 @@
 'use client';
 
-import { Flex, HStack, Text } from '@chakra-ui/react';
+import { Flex, HStack, Text, Button } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ThreeDots } from 'react-loader-spinner';
+import { signOut, useSession } from 'next-auth/react';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        router.push('/login');
-      } else {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, [router]);
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    } else if (status === 'authenticated') {
+      setIsLoading(false);
+    }
+  }, [status, router]);
 
   if (isLoading) {
     return (
@@ -44,6 +41,7 @@ export default function Home() {
       </Flex>
     );
   }
+
   return (
     <HStack>
       <Text>Welcome to BazaarX!</Text>
@@ -53,6 +51,7 @@ export default function Home() {
       <Text>Welcome To BazaarX!</Text>
       <Text>Welcome To BazaarX!</Text>
       <Text>Welcome To BazaarX</Text>
+      <Button onClick={() => signOut()}>Sign Out</Button>
     </HStack>
   );
 }

@@ -1,38 +1,40 @@
-// src/features/auth/authApiSlice.ts
 import { apiSlice } from "../apiSlice";
 
-
 interface User {
-  // Define user properties here
   id: string;
   email: string;
-  
+  name: string;
 }
 
-export interface LoginResponse {
+export type AuthResponse = {
   user: User;
   token: string;
-}
+};
+
+const jsonHeaders = {
+  'Content-Type': 'application/json',
+};
+
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<LoginResponse, { email: string; password: string }>({
+    login: builder.mutation<AuthResponse, { email: string; password: string }>({
       query: (credentials) => ({
-        url: '/auth/signin',
+        url: '/api/auth/callback/credentials',
         method: 'POST',
         body: credentials,
+        headers: jsonHeaders,
       }),
     }),
-    signup: builder.mutation<{ user: User; token: string } | { data: { user: User; token: string } }, FormData>({
-        query: (formData) => ({
-          url: '/auth/signup',
-          method: 'POST',
-          body: formData,
-          formData: true,
-        }),
+    signup: builder.mutation<AuthResponse, FormData>({
+      query: (formData) => ({
+        url: '/api/auth/signup',
+        method: 'POST',
+        body: formData,
+      }),
     }),
     logout: builder.mutation<void, void>({
       query: () => ({
-        url: '/auth/logout',
+        url: '/api/auth/signout',
         method: 'POST',
       }),
     }),
@@ -44,3 +46,5 @@ export const {
   useSignupMutation,
   useLogoutMutation,
 } = authApiSlice;
+
+export default authApiSlice;
