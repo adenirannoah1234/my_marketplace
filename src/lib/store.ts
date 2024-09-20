@@ -20,7 +20,7 @@ export const store = configureStore({
     getDefaultMiddleware().concat(authApiSlice.middleware, productsApiSlice.middleware, categoryApiSlice.middleware),
 });
 
-// Export types
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export type AppStore = typeof store; // Adding AppStore type
