@@ -18,6 +18,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 
+type CustomInputProps = Pick<
+  React.ComponentProps<typeof Input>,
+  'id' | 'type' | 'placeholder' | 'name' | 'value' | 'onChange'
+>;
+
 const CustomInput = ({
   id,
   type,
@@ -25,14 +30,7 @@ const CustomInput = ({
   name,
   value,
   onChange,
-}: {
-  id: string;
-  type: string;
-  placeholder: string;
-  name: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}) => (
+}: CustomInputProps) => (
   <FormControl id={id} w="100%">
     <FormLabel w="100%" fontSize="14px" color="#121111">
       {placeholder}
@@ -59,12 +57,20 @@ const CustomInput = ({
   </FormControl>
 );
 
+type FormData = {
+  email: string;
+  password: string;
+};
+
 const LoginPage = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState<FormData>({
+    email: '',
+    password: '',
+  });
   const router = useRouter();
   const toast = useToast();
-  const [isLoading, setIsLoading] = useState(false);
   const { status } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
 
   if (status === 'authenticated') {
     router.push('/');
@@ -78,19 +84,8 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.email || !formData.password) {
-      toast({
-        title: 'Please fill in all fields.',
-        description: 'All fields are required.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-      });
-      return;
-    }
-
     setIsLoading(true);
+
     try {
       const result = await signIn('credentials', {
         redirect: false,
@@ -99,23 +94,30 @@ const LoginPage = () => {
       });
 
       if (result?.error) {
-        throw new Error(result.error);
+        toast({
+          title: 'Login Failed',
+          description: result.error,
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+          position: 'top',
+        });
+      } else {
+        router.push('/');
+        toast({
+          title: 'Login Successful',
+          description: 'Welcome back!',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'top',
+        });
       }
-
-      toast({
-        title: 'Login Successful',
-        description: 'Welcome back!',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-        position: 'top',
-      });
-      router.push('/');
-    } catch (err: any) {
-      console.error('Login Error:', err);
+    } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: 'Login Failed',
-        description: err.message || 'Failed to log in.',
+        description: 'An unexpected error occurred. Please try again.',
         status: 'error',
         duration: 5000,
         isClosable: true,

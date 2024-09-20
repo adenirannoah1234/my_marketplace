@@ -34,8 +34,6 @@ export default function Home() {
           radius="9"
           color="#EB4022"
           ariaLabel="three-dots-loading"
-          wrapperStyle={{}}
-          wrapperClass=""
           visible={true}
         />
       </Flex>
@@ -45,12 +43,6 @@ export default function Home() {
   return (
     <HStack>
       <Text>Welcome to BazaarX!</Text>
-      <Text>Welcome to BazaarX!</Text>
-      <Text>Welcome To BazaarX!</Text>
-      <Text>Welcome To BazaarX!</Text>
-      <Text>Welcome To BazaarX!</Text>
-      <Text>Welcome To BazaarX!</Text>
-      <Text>Welcome To BazaarX</Text>
       <Button onClick={() => signOut()}>Sign Out</Button>
     </HStack>
   );

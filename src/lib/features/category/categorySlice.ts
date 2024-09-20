@@ -18,70 +18,74 @@ interface Product {
   category: string;
 }
 
+interface Category {
+  id?: string;
+  name: string;
+}
 
-export const productsApiSlice = createApi({
-  reducerPath: 'productsApi',
+export const categoryApiSlice = createApi({
+  reducerPath: 'categoryApi',
   baseQuery: fakeBaseQuery(),
   tagTypes: ['Products', 'Categories'],
   endpoints: (builder) => ({
-    getProducts: builder.query<Product[], void>({
+   
+    getCategories: builder.query<Category[], void>({
       async queryFn() {
         try {
-          const productsRef = collection(db, 'products');
-          const querySnapshot = await getDocs(productsRef);
-          const products: Product[] = [];
+          const categoriesRef = collection(db, 'categories');
+          const querySnapshot = await getDocs(categoriesRef);
+          const categories: Category[] = [];
           querySnapshot.forEach((doc) => {
-            products.push({ id: doc.id, ...doc.data() } as Product);
+            categories.push({ id: doc.id, ...doc.data() } as Category);
           });
-          return { data: products };
+          return { data: categories };
         } catch (error: any) {
           return { error: { status: error.code, data: error.message } };
         }
       },
-      providesTags: ['Products'],
+      providesTags: ['Categories'],
     }),
-    addProduct: builder.mutation<string, Omit<Product, 'id'>>({
-      async queryFn(product) {
+    addCategory: builder.mutation<string, Omit<Category, 'id'>>({
+      async queryFn(category) {
         try {
-          const docRef = await addDoc(collection(db, 'products'), product);
+          const docRef = await addDoc(collection(db, 'categories'), category);
           return { data: docRef.id };
         } catch (error: any) {
           return { error: { status: error.code, data: error.message } };
         }
       },
-      invalidatesTags: ['Products'],
+      invalidatesTags: ['Categories'],
     }),
-    updateProduct: builder.mutation<void, Product>({
-      async queryFn(product) {
+    updateCategory: builder.mutation<void, Category>({
+      async queryFn(category) {
         try {
-          const { id, ...updateData } = product;
-          await updateDoc(doc(db, 'products', id!), updateData);
+          const { id, ...updateData } = category;
+          await updateDoc(doc(db, 'categories', id!), updateData);
           return { data: undefined };
         } catch (error: any) {
           return { error: { status: error.code, data: error.message } };
         }
       },
-      invalidatesTags: ['Products'],
+      invalidatesTags: ['Categories'],
     }),
-    deleteProduct: builder.mutation<void, string>({
+    deleteCategory: builder.mutation<void, string>({
       async queryFn(id) {
         try {
-          await deleteDoc(doc(db, 'products', id));
+          await deleteDoc(doc(db, 'categories', id));
           return { data: undefined };
         } catch (error: any) {
           return { error: { status: error.code, data: error.message } };
         }
       },
-      invalidatesTags: ['Products'],
+      invalidatesTags: ['Categories'],
     }),
-   
   }),
 });
 
 export const {
-  useGetProductsQuery,
-  useAddProductMutation,
-  useUpdateProductMutation,
-  useDeleteProductMutation,
-  
-} = productsApiSlice;
+ 
+  useGetCategoriesQuery,
+  useAddCategoryMutation,
+  useUpdateCategoryMutation,
+  useDeleteCategoryMutation,
+} = categoryApiSlice;

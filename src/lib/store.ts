@@ -1,17 +1,23 @@
 // src/store.ts
 import { configureStore } from '@reduxjs/toolkit';
-import { apiSlice } from './features/apiSlice';
+import { authApiSlice } from './features/auth/authApiSlice';
 import authReducer from './features/auth/authSlice'; 
-import productReducer from './features/products/productsSlice';
+import productReducer from './features/products/product.reducer';
+import categoryReducer from './features/category/category.reducer';
+import { productsApiSlice } from './features/products/productsApiSlice';
+import { categoryApiSlice } from './features/category/categorySlice';
 
 export const store = configureStore({
   reducer: {
-    [apiSlice.reducerPath]: apiSlice.reducer,
+    [authApiSlice.reducerPath]: authApiSlice.reducer,
+    [productsApiSlice.reducerPath]: productsApiSlice.reducer,
+    [categoryApiSlice.reducerPath]: categoryApiSlice.reducer,
     auth: authReducer,
     products: productReducer,
+    categories: categoryReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    getDefaultMiddleware().concat(authApiSlice.middleware, productsApiSlice.middleware, categoryApiSlice.middleware),
 });
 
 // Export types

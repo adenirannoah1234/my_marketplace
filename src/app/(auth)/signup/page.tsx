@@ -9,24 +9,20 @@ import {
   VStack,
   Text,
   Button,
-  Box,
-  Icon,
   useToast,
   Heading,
 } from '@chakra-ui/react';
-import { useSignupMutation } from '@/lib/features/auth/authApiSlice';
-import { useDispatch } from 'react-redux';
-import { setCredentials } from '@/lib/features/auth/authSlice';
+import {
+  useSignupMutation,
+  useGoogleSignupMutation,
+} from '@/lib/features/auth/authApiSlice';
 import Link from 'next/link';
-import { FiEdit, FiUser } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
 
 interface SignUpData {
   name: string;
   email: string;
   password: string;
-  address: string;
-  phoneNumber: string;
 }
 
 const FormInput = ({
@@ -70,11 +66,10 @@ const SignupPage = () => {
     name: '',
     email: '',
     password: '',
-    address: '',
-    phoneNumber: '',
   });
   const [signup, { isLoading }] = useSignupMutation();
-  const dispatch = useDispatch();
+  const [googleSignup, { isLoading: isGoogleLoading }] =
+    useGoogleSignupMutation();
   const toast = useToast();
   const router = useRouter();
 
@@ -98,15 +93,8 @@ const SignupPage = () => {
       return;
     }
 
-    const formDataToSend = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      formDataToSend.append(key, value);
-    });
-
     try {
-      const result = await signup(formDataToSend).unwrap();
-      dispatch(setCredentials(result));
-
+      await signup(formData).unwrap();
       toast({
         title: 'Sign up successful.',
         description: 'Welcome to BazaarX!',
@@ -117,22 +105,43 @@ const SignupPage = () => {
       });
       router.push('/');
     } catch (err) {
-      console.error('Signup Error:', err);
-      let errorMessage = 'Failed to create user.';
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      } else if (typeof err === 'object' && err !== null && 'data' in err) {
-        errorMessage = (err as any).data?.message || errorMessage;
-      }
+      handleError(err);
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    try {
+      await googleSignup().unwrap();
       toast({
-        title: 'An error occurred.',
-        description: errorMessage,
-        status: 'error',
+        title: 'Google Sign up successful.',
+        description: 'Welcome to BazaarX!',
+        status: 'success',
         duration: 5000,
         isClosable: true,
         position: 'top',
       });
+      router.push('/');
+    } catch (err) {
+      handleError(err);
     }
+  };
+
+  const handleError = (err: any) => {
+    console.error('Signup Error:', err);
+    let errorMessage = 'Failed to create user.';
+    if (err instanceof Error) {
+      errorMessage = err.message;
+    } else if (typeof err === 'object' && err !== null && 'data' in err) {
+      errorMessage = (err as any).data?.message || errorMessage;
+    }
+    toast({
+      title: 'An error occurred.',
+      description: errorMessage,
+      status: 'error',
+      duration: 5000,
+      isClosable: true,
+      position: 'top',
+    });
   };
 
   return (
@@ -148,47 +157,6 @@ const SignupPage = () => {
         spacing={2}
         h={['100%', '100%', '100%', '100%', '100%']}
       >
-        <Box position="relative" w="100%">
-          <Input
-            type="file"
-            name="picture"
-            onChange={handleChange}
-            accept="image/*"
-            py="1rem"
-            px="1rem"
-            w="100%"
-            opacity={0}
-            zIndex={1}
-            cursor="pointer"
-          />
-          <Box
-            position="absolute"
-            top="50%"
-            left="50%"
-            transform="translate(-50%, -50%)"
-            bg="white"
-            borderRadius="full"
-            p={4}
-          >
-            <Icon as={FiEdit} color="#6e30b0" />
-          </Box>
-          <Box
-            position="absolute"
-            top="0"
-            left="0"
-            w="100%"
-            h="100%"
-            bg="gray.100"
-            borderRadius={10}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            fontSize="4xl"
-            color="#a89f98"
-          >
-            <Icon as={FiUser} />
-          </Box>
-        </Box>
         <FormInput
           label="Name"
           type="text"
@@ -213,22 +181,6 @@ const SignupPage = () => {
           onChange={handleChange}
           placeholder="Enter your password"
         />
-        <FormInput
-          label="Address"
-          type="text"
-          name="address"
-          value={formData.address}
-          onChange={handleChange}
-          placeholder="Enter your address"
-        />
-        <FormInput
-          label="Phone Number"
-          type="text"
-          name="phoneNumber"
-          value={formData.phoneNumber}
-          onChange={handleChange}
-          placeholder="Enter your phone number"
-        />
         <Button
           type="submit"
           isLoading={isLoading}
@@ -241,6 +193,19 @@ const SignupPage = () => {
           isDisabled={isLoading}
         >
           Sign Up
+        </Button>
+        <Button
+          onClick={handleGoogleSignup}
+          isLoading={isGoogleLoading}
+          _hover={{
+            bg: '#4285F4',
+            color: 'white',
+          }}
+          color={'white'}
+          bg="#4285F4"
+          isDisabled={isGoogleLoading}
+        >
+          Sign Up with Google
         </Button>
         <Text textAlign="center" w="100%" fontSize="12px" color="#544f4c">
           Already have an account?{' '}
