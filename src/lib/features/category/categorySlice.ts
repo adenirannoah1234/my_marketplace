@@ -11,12 +11,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../../../config/fireBaseConfig';
 
-interface Product {
-  id?: string;
-  name: string;
-  price: number;
-  category: string;
-}
+
 
 interface Category {
   id?: string;
