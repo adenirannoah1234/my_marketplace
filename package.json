@@ -4,22 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "echo 'Running Prisma generate' && prisma generate && echo 'Prisma generate complete' && next build",
+    "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "postinstall": "prisma generate",
-    "prisma:migrate:dev": "prisma migrate dev",
-    "prisma:migrate:deploy": "prisma migrate deploy",
-    "prisma:migrate:reset": "prisma migrate reset",
-    "prisma:studio": "prisma studio",
-    "prisma:generate": "prisma generate"
+    "lint": "next lint"
+    
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@next-auth/prisma-adapter": "^1.0.7",
-    "@prisma/client": "^5.19.1",
     "@reduxjs/toolkit": "^2.2.7",
     "@supabase/supabase-js": "^2.45.4",
     "@tinyhttp/cors": "^2.0.1",
@@ -57,7 +51,6 @@
     "eslint-plugin-jsx-a11y": "^6.9.0",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^4.6.2",
-    "prisma": "^5.19.1",
     "typescript": "^5"
   }
 }
