@@ -11,6 +11,7 @@ import {
   Button,
   useToast,
   Heading,
+  Box,
 } from '@chakra-ui/react';
 import {
   useSignupMutation,
@@ -47,8 +48,8 @@ const FormInput = ({
     <Input
       type={type}
       placeholder={placeholder}
-      _focus={{ borderColor: 'green.500' }}
-      border="1px solid lightgrey"
+      _focus={{ borderColor: '#EB4022' }}
+      border={'1px solid #AFAFAF'}
       focusBorderColor="transparent"
       name={name}
       value={value}
@@ -145,78 +146,84 @@ const SignupPage = () => {
   };
 
   return (
-    <VStack>
-      <Heading as="h2" size="lg" textAlign="center" fontSize="20px">
-        Sign up
-      </Heading>
-      <Stack
-        as="form"
-        onSubmit={handleSubmit}
-        borderRadius={10}
-        p={10}
-        spacing={2}
-        h={['100%', '100%', '100%', '100%', '100%']}
-      >
-        <FormInput
-          label="Name"
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="Enter your name"
-        />
-        <FormInput
-          label="Email"
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="Enter your email"
-        />
-        <FormInput
-          label="Password"
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          placeholder="Enter your password"
-        />
-        <Button
-          type="submit"
-          isLoading={isLoading}
-          _hover={{
-            bg: '#EB4022',
-            color: 'white',
-          }}
-          color={'white'}
-          bg="#EB4022"
-          isDisabled={isLoading}
-        >
-          Sign Up
-        </Button>
-        <Button
-          onClick={handleGoogleSignup}
-          isLoading={isGoogleLoading}
-          _hover={{
-            bg: '#4285F4',
-            color: 'white',
-          }}
-          color={'white'}
-          bg="#4285F4"
-          isDisabled={isGoogleLoading}
-        >
-          Sign Up with Google
-        </Button>
-        <Text textAlign="center" w="100%" fontSize="12px" color="#544f4c">
-          Already have an account?{' '}
-          <Link
-            href="/"
-            style={{ textDecoration: 'underline', color: '#EB4022' }}
+    <VStack h={'100%'} justify={'center'} bg="#FFFFFF" minH="100vh">
+      <Box w={['100%', '27.25rem']} p={'2rem'} h="33rem" bg="white">
+        <VStack gap={'1.5rem'} justify={'center'} h="100%">
+          <Heading as="h2" size="lg" textAlign="center" fontSize="20px">
+            Sign up
+          </Heading>
+
+          <Stack
+            as="form"
+            onSubmit={handleSubmit}
+            gap={'1rem'}
+            borderRadius={10}
+            w={['100%', '100%', '100%', '100%', '100%']}
+            spacing={2}
+            h={['100%', '100%', '100%', '100%', '100%']}
           >
-            Sign in here
-          </Link>
-        </Text>
-      </Stack>
+            <FormInput
+              label="Name"
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter your name"
+            />
+            <FormInput
+              label="Email"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+            />
+            <FormInput
+              label="Password"
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+            />
+            <Button
+              type="submit"
+              isLoading={isLoading}
+              _hover={{
+                bg: '#EB4022',
+                color: 'white',
+              }}
+              color={'white'}
+              bg="#EB4022"
+              isDisabled={isLoading}
+            >
+              Sign Up
+            </Button>
+            <Button
+              onClick={handleGoogleSignup}
+              isLoading={isGoogleLoading}
+              _hover={{
+                bg: '#4285F4',
+                color: 'white',
+              }}
+              color={'white'}
+              bg="#4285F4"
+              isDisabled={isGoogleLoading}
+            >
+              Sign Up with Google
+            </Button>
+            <Text textAlign="center" w="100%" fontSize="12px" color="#544f4c">
+              Already have an account?{' '}
+              <Link
+                href="/"
+                style={{ textDecoration: 'underline', color: '#EB4022' }}
+              >
+                Sign in here
+              </Link>
+            </Text>
+          </Stack>
+        </VStack>
+      </Box>
     </VStack>
   );
 };

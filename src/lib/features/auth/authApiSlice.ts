@@ -63,7 +63,7 @@ export const authApiSlice = createApi({
       async queryFn({ email, password, name }) {
         try {
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          // You might want to update the user's display name here
+         
           return { data: await handleAuthResponse(userCredential) };
         } catch (error: any) {
           return { error: { status: error.code, data: error.message } };
