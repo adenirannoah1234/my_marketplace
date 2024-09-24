@@ -12,6 +12,8 @@ import {
   useToast,
   Heading,
   Box,
+  Image,
+  Flex,
 } from '@chakra-ui/react';
 import {
   useSignupMutation,
@@ -110,44 +112,44 @@ const SignupPage = () => {
     }
   };
 
-  const handleGoogleSignup = async () => {
-    try {
-      await googleSignup().unwrap();
-      toast({
-        title: 'Google Sign up successful.',
-        description: 'Welcome to BazaarX!',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-      });
-      router.push('/');
-    } catch (err) {
-      handleError(err);
-    }
-  };
+  // const handleGoogleSignup = async () => {
+  //   try {
+  //     await googleSignup().unwrap();
+  //     toast({
+  //       title: 'Google Sign up successful.',
+  //       description: 'Welcome to BazaarX!',
+  //       status: 'success',
+  //       duration: 5000,
+  //       isClosable: true,
+  //       position: 'top',
+  //     });
+  //     router.push('/');
+  //   } catch (err) {
+  //     handleError(err);
+  //   }
+  // };
 
-  const handleError = (err: any) => {
-    console.error('Signup Error:', err);
-    let errorMessage = 'Failed to create user.';
-    if (err instanceof Error) {
-      errorMessage = err.message;
-    } else if (typeof err === 'object' && err !== null && 'data' in err) {
-      errorMessage = (err as any).data?.message || errorMessage;
-    }
-    toast({
-      title: 'An error occurred.',
-      description: errorMessage,
-      status: 'error',
-      duration: 5000,
-      isClosable: true,
-      position: 'top',
-    });
-  };
+  // const handleError = (err: any) => {
+  //   console.error('Signup Error:', err);
+  //   let errorMessage = 'Failed to create user.';
+  //   if (err instanceof Error) {
+  //     errorMessage = err.message;
+  //   } else if (typeof err === 'object' && err !== null && 'data' in err) {
+  //     errorMessage = (err as any).data?.message || errorMessage;
+  //   }
+  //   toast({
+  //     title: 'An error occurred.',
+  //     description: errorMessage,
+  //     status: 'error',
+  //     duration: 5000,
+  //     isClosable: true,
+  //     position: 'top',
+  //   });
+  // };
 
   return (
     <VStack h={'100%'} justify={'center'} bg="#FFFFFF" minH="100vh">
-      <Box w={['100%', '27.25rem']} p={'2rem'} h="33rem" bg="white">
+      <Box w={['100%', '27.25rem']} p={'2rem'} h="35rem" bg="white">
         <VStack gap={'1.5rem'} justify={'center'} h="100%">
           <Heading as="h2" size="lg" textAlign="center" fontSize="20px">
             Sign up
@@ -160,7 +162,7 @@ const SignupPage = () => {
             borderRadius={10}
             w={['100%', '100%', '100%', '100%', '100%']}
             spacing={2}
-            h={['100%', '100%', '100%', '100%', '100%']}
+            // h={['100%', '100%', '100%', '100%', '100%']}
           >
             <FormInput
               label="Name"
@@ -195,23 +197,41 @@ const SignupPage = () => {
               }}
               color={'white'}
               bg="#EB4022"
+              py={'1.5rem'}
               isDisabled={isLoading}
             >
               Sign Up
             </Button>
-            <Button
-              onClick={handleGoogleSignup}
-              isLoading={isGoogleLoading}
-              _hover={{
-                bg: '#4285F4',
-                color: 'white',
-              }}
-              color={'white'}
-              bg="#4285F4"
-              isDisabled={isGoogleLoading}
+
+            {/* <Flex
+              justify="center"
+              border="1px solid #6e30b0"
+              py="0.2rem"
+              borderRadius={5}
+              w="100%"
+              h={'20%'}
             >
-              Sign Up with Google
-            </Button>
+              <Button
+                onClick={handleGoogleSignup}
+                isLoading={isGoogleLoading}
+                isDisabled={isGoogleLoading}
+                variant="white"
+                width="100%"
+              >
+                <Flex align="center" justify="center">
+                  <Image
+                    src="/Icons.png"
+                    alt="google image"
+                    width={17}
+                    height={4}
+                  />
+                  <Text ml={2} color="#6e30b0">
+                    Sign up with Google
+                  </Text>
+                </Flex>
+              </Button>
+            </Flex> */}
+
             <Text textAlign="center" w="100%" fontSize="12px" color="#544f4c">
               Already have an account?{' '}
               <Link
@@ -229,3 +249,6 @@ const SignupPage = () => {
 };
 
 export default SignupPage;
+function handleError(err: unknown) {
+  throw new Error('Function not implemented.');
+}

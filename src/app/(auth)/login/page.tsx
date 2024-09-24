@@ -13,10 +13,12 @@ import {
   Heading,
   useToast,
   Text,
+  Image,
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
+import { ThreeDots } from 'react-loader-spinner';
 
 type CustomInputProps = Pick<
   React.ComponentProps<typeof Input>,
@@ -128,6 +130,27 @@ const LoginPage = () => {
     }
   };
 
+  // if (status === 'loading') {
+  //   return (
+  //     <Flex
+  //       justify="center"
+  //       alignItems="center"
+  //       h="100vh"
+  //       // w="100vw"
+  //       bg="#f5f5f5"
+  //     >
+  //       <ThreeDots
+  //         height="80"
+  //         width="80"
+  //         radius="9"
+  //         color="#EB4022"
+  //         ariaLabel="three-dots-loading"
+  //         visible={true}
+  //       />
+  //     </Flex>
+  //   );
+  // }
+
   return (
     <VStack h={'100%'} justify={'center'} bg="#FFFFFF" minH="100vh">
       <Box w={['100%', '27.25rem']} p={'2rem'} h="33rem" bg="white">
@@ -182,6 +205,34 @@ const LoginPage = () => {
             >
               Sign in
             </Button>
+            {/* <Flex
+              justify="center"
+              border="1px solid #EB4022"
+              py="0.2rem"
+              borderRadius={5}
+              w="100%"
+              h={'20%'}
+            >
+              <Button
+                // onClick={handleGoogleSignin}
+                // isLoading={isGoogleLoading}
+                // isDisabled={isGoogleLoading}
+                variant="white"
+                width="100%"
+              >
+                <Flex align="center" justify="center">
+                  <Image
+                    src="/Icons.png"
+                    alt="google image"
+                    width={17}
+                    height={4}
+                  />
+                  <Text ml={2} color="#EB4022">
+                    Sign up with Google
+                  </Text>
+                </Flex>
+              </Button>
+            </Flex> */}
           </VStack>
           <Text textAlign="center" w="100%" fontSize="12px">
             Don&apos;t have an account?{' '}
