@@ -29,7 +29,7 @@ const Header = () => {
   const BecomeaSeller = () => {
     const router = useRouter();
     return (
-      <Link href="/sign-up" passHref>
+      <Link href="/signup" passHref>
         <Button
           as="a"
           bg="#EB4022"
@@ -39,7 +39,6 @@ const Header = () => {
           size="md"
           cursor="pointer"
           transition="all 0.2s"
-          _active={{ bg: 'gray.100' }}
         >
           Become a Seller
         </Button>
