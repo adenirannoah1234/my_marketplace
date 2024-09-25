@@ -235,7 +235,7 @@ const SignupPage = () => {
             <Text textAlign="center" w="100%" fontSize="12px" color="#544f4c">
               Already have an account?{' '}
               <Link
-                href="/"
+                href="/login"
                 style={{ textDecoration: 'underline', color: '#EB4022' }}
               >
                 Sign in here

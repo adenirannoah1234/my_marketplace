@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import {
   Box,
@@ -31,7 +33,7 @@ const Header = () => {
     return (
       <Link href="/signup" passHref>
         <Button
-          as="a"
+          //   as="a"
           bg="#EB4022"
           color="white"
           _hover={{ bg: '#EB4022' }}
@@ -102,13 +104,16 @@ const Header = () => {
             display={{ base: 'none', md: 'block' }}
           >
             <Button onClick={toggleColorMode} ml={2}>
-              Toggle Theme
+              Mode
             </Button>
           </MotionBox>
           <Box display={{ base: 'block', md: 'none' }}>
             <IconButton
               aria-label="Open Menu"
               size="lg"
+              bg="#EB4022"
+              color="white"
+              _hover={{ bg: '#EB4022' }}
               icon={isOpen ? <X /> : <Menu />}
               onClick={onToggle}
             />
@@ -150,6 +155,13 @@ const Header = () => {
                 </MotionBox>
               ))}
               <MotionBox
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.62 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <BecomeaSeller />
+              </MotionBox>
+              <MotionBox
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 initial={{ opacity: 0, x: -20 }}
@@ -161,7 +173,7 @@ const Header = () => {
                   w="full"
                   justifyContent="flex-start"
                 >
-                  Toggle Theme
+                  Mode
                 </Button>
               </MotionBox>
             </VStack>

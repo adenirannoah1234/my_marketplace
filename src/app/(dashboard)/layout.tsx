@@ -9,9 +9,8 @@ const inter = Nunito({ subsets: ['latin'] });
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import { ThreeDots } from 'react-loader-spinner';
-import Header from './component/Navbar';
 
-export default function LandingPageLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -44,17 +43,8 @@ export default function LandingPageLayout({
   }
 
   if (status === 'unauthenticated') {
-    return router.push('/login');
+    return router.push('/landingpage');
   }
 
-  return (
-    <main className={inter.className}>
-      <VStack spacing={0} align="stretch">
-        <Header />
-        <Box mt={20} px={6}>
-          {children}
-        </Box>
-      </VStack>
-    </main>
-  );
+  return <main className={inter.className}>{children}</main>;
 }
